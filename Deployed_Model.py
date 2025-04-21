@@ -1,43 +1,37 @@
 import streamlit as st
-import pandas as pd
 import joblib
+import numpy as np
 
-# Load trained model
-try:
-    model = joblib.load("best_model.joblib")
-except FileNotFoundError:
-    st.error("Model file not found! Make sure 'best_model.joblib' is in the same directory.")
-    st.stop()  # Stop the app if model file is not found
+# Load the trained model
+@st.cache_resource
+def load_model():
+    return joblib.load("best_model.joblib")
 
-st.title("🏘️ Real Estate Price Estimator")
-st.write("Estimate the **house price per unit area** based on location and features.")
+model = load_model()
 
-# Sidebar input fields
-st.sidebar.header("Property Features")
+# Page setup
+st.set_page_config(page_title="Real Estate Valuation", layout="centered")
+st.title("🏠 Real Estate Price Prediction")
 
-house_age = st.sidebar.slider("House Age (years)", 0.0, 50.0, 10.0)
-dist_to_mrt = st.sidebar.slider("Distance to Nearest MRT (meters)", 0.0, 6500.0, 1000.0)
-n_convenience = st.sidebar.number_input("Number of Convenience Stores Nearby", 0, 20, 5)
-latitude = st.sidebar.number_input("Latitude", 24.90, 25.10, 24.98)
-longitude = st.sidebar.number_input("Longitude", 121.40, 121.60, 121.50)
-trans_year = st.sidebar.slider("Transaction Year", 2012, 2013, 2013)
-trans_month = st.sidebar.slider("Transaction Month", 1, 12, 6)
+st.markdown("""
+Enter the property details below to estimate the *price per unit area*.
+""")
 
-# Predict button
-if st.sidebar.button("Predict"):
-    input_data = pd.DataFrame([{
-        "house_age": house_age,
-        "dist_to_mrt": dist_to_mrt,
-        "n_convenience": n_convenience,
-        "latitude": latitude,
-        "longitude": longitude,
-        "trans_year": trans_year,
-        "trans_month": trans_month
-    }])
+# Input form
+with st.form("input_form"):
+    house_age = st.number_input("House Age (years)", min_value=0.0, max_value=100.0, step=0.1)
+    dist_to_mrt = st.number_input("Distance to Nearest MRT Station (meters)", min_value=0.0, step=1.0)
+    n_convenience = st.number_input("Number of Convenience Stores Nearby", min_value=0, step=1)
+    latitude = st.number_input("Latitude", min_value=0.0, step=0.0001)
+    longitude = st.number_input("Longitude", min_value=0.0, step=0.0001)
+    trans_year = st.selectbox("Transaction Year", options=[2012, 2013, 2014])
+    trans_month = st.selectbox("Transaction Month", options=list(range(1, 13)))
 
-    # Make the prediction
+    submitted = st.form_submit_button("Predict")
+
+# When form is submitted
+if submitted:
+    input_data = np.array([[house_age, dist_to_mrt, n_convenience,
+                            latitude, longitude, trans_year, trans_month]])
     prediction = model.predict(input_data)[0]
-    st.subheader("💰 Predicted Price per Unit Area:")
-    st.success(f"{prediction:.2f} (currency units)")
-
-    st.markdown("📌 Note: This is an estimate based on historical data from Taipei housing market.")
+    st.success(f"🏷️ *Estimated Price per Unit Area: {prediction:.2f}*")
