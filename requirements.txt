@@ -7,4 +7,4 @@ seaborn
 joblib
 ucimlrepo
 
-pip freeze >requirements_train.txt
+
