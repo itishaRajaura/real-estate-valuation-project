@@ -1,0 +1,72 @@
+Overview
+This Streamlit application predicts the real estate price per unit area (NT$/m²) using property features. The model is trained on the UCI Real Estate Valuation Dataset.
+
+🔧 Technologies Used
+Python
+
+Streamlit for UI
+
+Joblib for model loading
+
+Pandas / NumPy for data manipulation
+
+Matplotlib / Seaborn for visualization
+
+📁 Application Pages
+1. Make Prediction
+Allows users to input property details and get a predicted price.
+
+Inputs:
+
+Transaction Year & Month
+
+House Age (years)
+
+Distance to MRT Station (meters)
+
+Number of Nearby Convenience Stores
+
+Latitude / Longitude
+
+Output:
+
+Predicted house price per unit area in New Taiwan Dollars (NT$)
+
+2. Model Info
+Displays:
+
+Model type and final estimator
+
+Feature list
+
+Model performance metrics:
+
+R² Score: 0.85
+
+RMSE: 5.2
+
+MAE: 4.1
+
+Also includes a bar chart to visualize performance.
+
+3. About Dataset
+Details about the UCI dataset and its features:
+
+Feature Overview
+
+Synthetic Scatterplot: House Age vs. Price
+
+Feature Correlation Matrix
+
+⚙️ Model Loading
+Model is loaded from best_model.joblib
+
+If not found, an error is shown to the user
+
+🔒 Caching
+The @st.cache_resource decorator is used for model loading to optimize performance
+
+ℹ️ Notes
+Values are user-adjustable with sliders and inputs
+
+
